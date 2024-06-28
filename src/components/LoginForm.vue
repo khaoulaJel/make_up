@@ -1,14 +1,14 @@
 <template>
   <div class="form-container">
-    <h2 class="text-2xl font-bold mb-6 text-center text-white">Sign In</h2>
-    <form @submit.prevent="handleLogin" class="flex flex-col space-y-6">
-      <input type="email" required placeholder="Email" v-model="email" class="input-field">
+    <h2 class="form-title">Sign In</h2>
+    <form @submit.prevent="handleLogin" class="form">
+      <input type="email" required placeholder="University Email" v-model="email" class="input-field">
       <input type="password" required placeholder="Password" v-model="password" class="input-field">
-      <div class="flex justify-between items-center">
-        <a href="#" class="text-sm text-white">Forgot Password?</a>
+      <div class="form-footer">
+        <a href="#" class="forgot-password">Forgot Password?</a>
         <button class="login-button">Sign In</button>
       </div>
-      <div class="error text-red-500 mt-4 text-center">{{ error }}</div>
+      <div class="error">{{ error }}</div>
     </form>
   </div>
 </template>
@@ -17,13 +17,27 @@
 import { ref } from 'vue';
 import useLogin from '@/firebase/Authentification/useLogin';
 
+
 const emit = defineEmits(['login']);
 const email = ref('');
 const password = ref('');
+const error = ref('');
 
-const { error, login } = useLogin();
+const { login } = useLogin();
+
+const isUniversityEmail = (email) => {
+  const universityDomain = '@um6p.ma';
+  return email.endsWith(universityDomain);
+};
 
 const handleLogin = async () => {
+  if (!isUniversityEmail(email.value)) {
+    error.value = 'Please use your university email (@um6p.ma) to log in.';
+    return;
+  }
+  else {
+    error.value= null;
+  }
   await login(email.value, password.value);
   if (!error.value) {
     emit('login');
@@ -31,47 +45,81 @@ const handleLogin = async () => {
 };
 </script>
 
+
 <style scoped>
 .form-container {
-  max-width: 400px;
+  width: 500px;
   margin: 0 auto;
-  padding: 2rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  padding: 3rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 40px rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(15px);
+  text-align: center;
+}
+
+.form-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  color: white;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .input-field {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.3);
   border: none;
   outline: none;
   color: white;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  margin-bottom: 10px;
-  width: 300px;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  width: 100%;
+  max-width: 350px;
+  transition: background 0.3s ease;
+}
+
+.input-field:focus {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 350px;
+}
+
+.forgot-password {
+  font-size: 1rem;
+  color: white;
+  text-decoration: underline;
 }
 
 .login-button {
-  background: #1e3a8a;
+  background: linear-gradient(135deg, #db1313, #1f1f1f);
   border: none;
   outline: none;
   cursor: pointer;
   color: white;
-  padding: 1rem 1.5rem; /* Adjust padding to make the button larger */
-  border-radius: 0.5rem;
+  padding: 1rem 2rem;
+  border-radius: 0.75rem;
+  font-size: 1.25rem;
   transition: background 0.3s ease;
-  font-size: 1rem; /* Adjust font size */
 }
 
 .login-button:hover {
-  background: #3b82f6;
+  background: linear-gradient(135deg, #3b82f6, #1e3a8a);
 }
 
 .error {
   color: red;
-  font-size: 0.875rem;
+  font-size: 1rem;
 }
 </style>

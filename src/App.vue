@@ -1,13 +1,14 @@
 <template>
-
-    <router-view />
+  <Navigation/>
+  <router-view />
 </template>
 
 <script>
 import AppLayout from '@/components/Navigation.vue';
+import Navigation from '@/components/Navigation.vue';
 
 export default {
-  components: { AppLayout }
+  components: { AppLayout, Navigation }
 };
 </script>
 

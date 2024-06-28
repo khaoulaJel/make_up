@@ -1,70 +1,57 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { getUser, isLogged, waitForAuthInit, getUserById } from "@/firebase/Authentification/getUser"
 
 import HomeView from '../views/HomeView.vue';
 import AuthView from '../views/AuthView.vue';
-import Browse from '../views/AboutView.vue';
-import ProfileView from '../views/profile.vue'; 
-
-import Details from '../views/AboutView.vue';
-import DashboardView from '../views/AboutView.vue';
-import Create from '../views/AboutView.vue';
-import Edit from '../views/AboutView.vue';
-
-import { isLogged, waitForAuthInit, getUserById, getUser } from '@/firebase/Authentification/getUser'; 
+import EventList from '../views/EventList.vue';
+import VoteModal from '../views/VoteModal.vue'; 
+import ProfileView from '../views/profile.vue';
+import addEvent from '@/views/addEvent.vue'
+const routes = [
+  {
+    path: '/',
+    name: 'Home',
+    component: HomeView
+  },
+  {
+    path: '/auth',
+    name: 'AuthPage',
+    component: AuthView,
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/profile',
+    name: 'UserProfile',
+    component: ProfileView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/browse',
+    name: 'Browse',
+    component: EventList,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/vote/:id', 
+    name: 'VoteModal',
+    component: VoteModal,
+    props: true,
+    meta: { requiresAuth: true } 
+  },
+  {
+    path: '/add',
+    name: 'add',
+    component: addEvent,
+    meta: { requiresAuth: true }
+  },
+];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'Home',
-      component: HomeView
-    },
-    {
-      path: '/auth',
-      name: 'AuthPage',
-      component: AuthView,
-      meta: { requiresAuth: false }
-    },
-    {
-      path: '/dashboard',
-      name: 'Dashboard',
-      component: DashboardView,
-      meta: { requiresAuth: true, requiresAdmin: true }
-    },
-    {
-      path: '/create',
-      name: 'Create',
-      component: Create,
-      meta: { requiresAuth: true, requiresAdmin: true }
-    },
-    {
-      path: '/edit/:id',
-      name: 'Edit',
-      component: Edit,
-      meta: { requiresAuth: true, requiresAdmin: true }
-    },
-    {
-      path: '/quizdetails/:id',
-      name: 'QuizDetails',
-      component: Details,
-      meta: { requiresAuth: true },
-      props: true
-    },
-    {
-      path: '/profile',
-      name: 'UserProfile',
-      component: ProfileView,
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/browse',
-      name: 'Browse',
-      component: Browse,
-      meta: { requiresAuth: true }
-    },
-  ]
+  routes
 });
+
+
 
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
